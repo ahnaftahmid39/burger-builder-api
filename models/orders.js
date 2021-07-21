@@ -1,21 +1,39 @@
 const { Schema, model } = require('mongoose');
 
-const orderSchema = Schema({
-  userId: { type: Schema.Types.ObjectId },
-  ingredients: [{ type: { type: String }, amount: { type: Number } }],
-  customer: {
-    deliveryAddress: { type: String },
-    phone: { type: String },
-    paymentType: { type: String },
+const orderSchema = Schema(
+  {
+    userId: { type: Schema.Types.ObjectId },
+    ingredients: [{ type: { type: String }, amount: { type: Number } }],
+    customer: {
+      deliveryAddress: { type: String },
+      phone: { type: String },
+      paymentType: { type: String },
+    },
+    price: { type: Number },
+    orderTime: { type: Date, default: Date.now() },
+    orderStatus: {
+      type: String,
+      default: 'Pending',
+      enum: ['Pending', 'Completed'],
+    },
+    paymentStatus: {
+      type: String,
+      default: 'Not validated yet',
+    },
+    tran_id: {
+      type: String,
+      unique: true,
+    },
+    sessionKey: {
+      type: String,
+    }
   },
-  price: { type: Number },
-  orderTime: { type: Date, default: Date.now() },
-});
+  { timestamps: true }
+);
 
 const Order = model('Order', orderSchema);
 
 module.exports.Order = Order;
-
 
 /*
 {

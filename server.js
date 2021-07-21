@@ -8,6 +8,8 @@ const dbAddress = process.env.MONGODB_SERVER.replace(
   process.env.DB_PASSWORD
 );
 
+global.__baseDir = __dirname;
+
 mongoose
   .connect(dbAddress, {
     useNewUrlParser: true,
