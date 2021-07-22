@@ -28,6 +28,7 @@ const orderSchema = Schema(
     tran_id: {
       type: String,
       unique: true,
+      sparse: true,
     },
     sessionKey: {
       type: String,
