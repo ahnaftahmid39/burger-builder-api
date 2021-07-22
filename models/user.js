@@ -29,7 +29,7 @@ const userSchema = Schema({
 });
 userSchema.methods.getJWT = function () {
   return jwt.sign(
-    { _id: this._id, email: this.email, role: this.role },
+    { _id: this._id, name: this.name, email: this.email, role: this.role },
     process.env.JWT_SECRET,
     { expiresIn: '1h' }
   );
@@ -41,7 +41,7 @@ const validateUser = (user) => {
     name: joi.string(),
   });
   return schema.validate(user);
-}
+};
 
 module.exports.User = model('User', userSchema);
 module.exports.validate = validateUser;
