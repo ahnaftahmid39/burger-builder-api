@@ -4,17 +4,22 @@ const orderSchema = Schema(
   {
     userId: { type: Schema.Types.ObjectId },
     ingredients: [{ type: { type: String }, amount: { type: Number } }],
-    customer: {
-      deliveryAddress: { type: String },
-      phone: { type: String },
-      paymentType: { type: String },
-    },
+    paymentMethod: { type: String },
     price: { type: Number },
     orderTime: { type: Date, default: Date.now() },
     orderStatus: {
       type: String,
       default: 'Pending',
       enum: ['Pending', 'Completed'],
+    },
+    customer: {
+      phone: String,
+      address1: String,
+      address2: String,
+      city: String,
+      state: String,
+      postcode: Number,
+      country: String,
     },
     paymentStatus: {
       type: String,
@@ -26,7 +31,7 @@ const orderSchema = Schema(
     },
     sessionKey: {
       type: String,
-    }
+    },
   },
   { timestamps: true }
 );
