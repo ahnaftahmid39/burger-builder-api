@@ -7,45 +7,52 @@ const fetch = require('node-fetch');
 const authorize = require('../middlewares/authorize');
 
 const ipn = async (req, res) => {
-  const payment = new Payment(req.body);
-  const tran_id = payment['tran_id'];
+  try {
+    console.log(req.body);
+    const payment = new Payment(req.body);
+    console.log(payment);
+    const tran_id = payment['tran_id'];
 
-  if (payment['status'] === 'VALID') {
-    const storeId = process.env.STORE_ID;
-    const storePassword = process.env.STORE_PASSWORD;
-    const val_id = payment['val_id'];
+    if (payment['status'] === 'VALID') {
+      const storeId = process.env.STORE_ID;
+      const storePassword = process.env.STORE_PASSWORD;
+      const val_id = payment['val_id'];
 
-    const response = await fetch(
-      `https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php?val_id=${val_id}&store_id=${storeId}&store_passwd=${storePassword}&format=json`,
-      {
-        method: 'GET', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, cors, *same-origin
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, *same-origin, omit
-        redirect: 'follow', // manual, *follow, error
-        referrer: 'no-referrer', // no-referrer, *client
-      }
-    );
-    const data = await response.json();
-    if (data.status === 'VALID') {
-      await Order.updateOne(
-        { tran_id: tran_id },
-        { orderStatus: 'Complete', paymentStatus: data.status }
+      const response = await fetch(
+        `https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php?val_id=${val_id}&store_id=${storeId}&store_passwd=${storePassword}&format=json`,
+        {
+          method: 'GET', // *GET, POST, PUT, DELETE, etc.
+          mode: 'cors', // no-cors, cors, *same-origin
+          cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+          credentials: 'same-origin', // include, *same-origin, omit
+          redirect: 'follow', // manual, *follow, error
+          referrer: 'no-referrer', // no-referrer, *client
+        }
       );
+      const data = await response.json();
+      if (data.status === 'VALID') {
+        await Order.updateOne(
+          { tran_id: tran_id },
+          { orderStatus: 'Complete', paymentStatus: data.status }
+        );
+      } else {
+        await Order.updateOne(
+          { tran_id: tran_id },
+          { orderStatus: 'Pending', paymentStatus: data.status }
+        );
+      }
     } else {
       await Order.updateOne(
         { tran_id: tran_id },
-        { orderStatus: 'Pending', paymentStatus: data.status }
+        { orderStatus: 'Pending', paymentStatus: payment['status'] }
       );
     }
-  } else {
-    await Order.updateOne(
-      { tran_id: tran_id },
-      { orderStatus: 'Pending', paymentStatus: payment['status'] }
-    );
+    await payment.save();
+    return res.status(200).send('IPN');
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).send('Internal server error!');
   }
-  await payment.save();
-  return res.status(200).send('IPN');
 };
 
 const initPayment = async (req, res) => {
