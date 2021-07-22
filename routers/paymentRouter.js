@@ -61,7 +61,7 @@ const initPayment = async (req, res) => {
     const payment = new PaymentSession(true, storeId, storePassword);
 
     const backendURL =
-      process.env.HEROKU_URL || 'https://boiling-beyond-54079.herokuapp.com/';
+      process.env.HEROKU_URL || 'https://boiling-beyond-54079.herokuapp.com';
     // Set the urls
     payment.setUrls({
       success: `${backendURL}/api/payment/success`, // If payment Succeed
