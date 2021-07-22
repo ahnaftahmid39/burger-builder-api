@@ -8,9 +8,7 @@ const authorize = require('../middlewares/authorize');
 
 const ipn = async (req, res) => {
   try {
-    console.log(req.body);
     const payment = new Payment(req.body);
-    console.log(payment);
     const tran_id = payment['tran_id'];
 
     if (payment['status'] === 'VALID') {

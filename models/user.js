@@ -28,7 +28,6 @@ const userSchema = Schema({
   },
 });
 userSchema.methods.getJWT = function () {
-  console.log(this.name);
   return jwt.sign(
     { _id: this._id, name: this.name, email: this.email, role: this.role },
     process.env.JWT_SECRET,
